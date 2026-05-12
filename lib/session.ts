@@ -28,14 +28,21 @@ export interface SessionData {
   returnUrl?: string
 }
 
+const sharedSessionSecret = process.env.SHARED_SESSION_SECRET || process.env.SESSION_SECRET
+const sharedSessionCookieName =
+  process.env.SHARED_SESSION_COOKIE_NAME || process.env.SESSION_COOKIE_NAME || 'rased_shell_sid'
+const sharedSessionCookieDomain =
+  process.env.SHARED_SESSION_COOKIE_DOMAIN || process.env.SESSION_COOKIE_DOMAIN
+
 export const SESSION_OPTIONS: SessionOptions = {
-  password: process.env.SESSION_SECRET!,
-  cookieName: process.env.SESSION_COOKIE_NAME || 'rased_shell_sid',
+  password: sharedSessionSecret!,
+  cookieName: sharedSessionCookieName,
   cookieOptions: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     maxAge: parseInt(process.env.SESSION_MAX_AGE_SECONDS || '3600', 10),
     path: '/',
+    ...(sharedSessionCookieDomain ? { domain: sharedSessionCookieDomain } : {}),
   },
 }

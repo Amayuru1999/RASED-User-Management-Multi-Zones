@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../rased-shared-ui/src/**/*.{ts,tsx}";
 
 @theme {
   --color-primary: #1e3a5f;

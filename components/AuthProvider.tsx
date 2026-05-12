@@ -36,7 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(data.user)
         } else {
           clearUser()
-          // Enforce redirect for all paths, not just non-root paths
           if (!pathname.startsWith('/api/auth')) {
             const returnUrl = normalizeReturnUrl(window.location.pathname)
             router.push(`/api/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`)
@@ -45,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (err) {
         console.error('Session check failed', err)
         clearUser()
-        // Ensure we still redirect on error so the user isn't stuck in a broken state
         if (!pathname.startsWith('/api/auth')) {
           const returnUrl = normalizeReturnUrl(window.location.pathname)
           router.push(`/api/auth/login?returnUrl=${encodeURIComponent(returnUrl)}`)
