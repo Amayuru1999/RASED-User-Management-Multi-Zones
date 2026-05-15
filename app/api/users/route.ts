@@ -3,7 +3,8 @@ import { getIronSession } from 'iron-session'
 import { cookies } from 'next/headers'
 import { SessionData, SESSION_OPTIONS } from '@/lib/session'
 import { hasPermission } from '@/lib/rbac'
-import { getMockUsers } from '@/lib/mockData'
+import { getUsers } from '@/lib/userRepository'
+import type { UserFilters } from '@/lib/userTypes'
 
 export async function GET(request: NextRequest) {
   const cookieStore = await cookies()
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
 
   // Parse filters from URL
   const searchParams = request.nextUrl.searchParams
-  const filters = {
+  const filters: UserFilters = {
     search: searchParams.get('search') || '',
     status: searchParams.get('status') || 'ALL',
     role: searchParams.get('role') || 'ALL',
@@ -29,26 +30,10 @@ export async function GET(request: NextRequest) {
     pageSize: parseInt(searchParams.get('pageSize') || '10', 10),
   }
 
-  // In development, return mock data. In production, proxy to actual backend API.
-  if (process.env.NODE_ENV === 'development') {
-    return NextResponse.json(getMockUsers(filters))
-  }
-
   try {
-    const BACKEND_URL = process.env.BACKEND_API_URL || 'http://localhost:8080/api/v1'
-    const backendResponse = await fetch(`${BACKEND_URL}/users?${searchParams.toString()}`, {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    })
-    
-    if (!backendResponse.ok) {
-      throw new Error('Backend error')
-    }
-
-    const data = await backendResponse.json()
-    return NextResponse.json(data)
+    const data = await getUsers(filters)
+    return NextResponse.json(data, { status: 200 })
   } catch {
-    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch users from database' }, { status: 500 })
   }
 }

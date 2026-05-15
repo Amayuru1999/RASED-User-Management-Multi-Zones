@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, make sure MongoDB is running on `mongodb://127.0.0.1:27017` (or update `.env.local`), then run the development server:
 
 ```bash
 npm run dev
@@ -14,7 +14,19 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3001/users](http://localhost:3001/users) with your browser to see the result.
+
+## User Directory data source
+
+- User data is read from MongoDB through `app/api/users`.
+- On first read, the API auto-seeds sample users if the `users` collection is empty.
+- To manually seed (or reseed), call:
+
+```bash
+curl -X POST http://localhost:3001/users/api/users/seed \
+  -H "Content-Type: application/json" \
+  -d '{"force": false}'
+```
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

@@ -1,28 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-
-export interface User {
-  id: string
-  username: string
-  email: string
-  firstName: string
-  lastName: string
-  roles: string[]
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'PENDING'
-  nic?: string
-  phone?: string
-  department?: string
-  stationCode?: string
-}
-
-export interface UserFilters {
-  search: string
-  status: string
-  role: string
-  page: number
-  pageSize: number
-}
+import type { User, UserFilters, UsersResponse } from '@/lib/userTypes'
 
 interface UserManagementState {
   users: User[]
@@ -36,7 +15,7 @@ interface UserManagementState {
   createModalOpen: boolean
   
   // Actions
-  setUsers: (response: { users: User[]; total: number; totalPages: number }) => void
+  setUsers: (response: UsersResponse) => void
   setFilters: (filters: Partial<UserFilters>) => void
   openEditModal: (user: User) => void
   closeEditModal: () => void

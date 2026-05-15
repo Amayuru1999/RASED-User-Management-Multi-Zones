@@ -1,6 +1,6 @@
-import { User, UserFilters } from '../store/userManagementStore'
+import type { User } from '@/lib/userTypes'
 
-export const MOCK_USERS: User[] = [
+export const USER_SEED_DATA: User[] = [
   {
     id: 'u-1',
     username: 'kasun.s',
@@ -48,34 +48,16 @@ export const MOCK_USERS: User[] = [
     nic: '199012345678',
     department: 'Audit',
   },
+  {
+    id: 'u-5',
+    username: 'tharindu.j',
+    email: 'tharindu.j@excise.gov.lk',
+    firstName: 'Tharindu',
+    lastName: 'Jayasinghe',
+    roles: ['EXCISE_OFFICER'],
+    status: 'PENDING',
+    phone: '0751122334',
+    department: 'Licensing',
+    stationCode: 'GAL-02',
+  },
 ]
-
-export function getMockUsers(filters: UserFilters) {
-  let filtered = [...MOCK_USERS]
-
-  if (filters.search) {
-    const q = filters.search.toLowerCase()
-    filtered = filtered.filter(
-      (u) =>
-        u.firstName.toLowerCase().includes(q) ||
-        u.lastName.toLowerCase().includes(q) ||
-        u.email.toLowerCase().includes(q) ||
-        u.username.toLowerCase().includes(q)
-    )
-  }
-
-  if (filters.status && filters.status !== 'ALL') {
-    filtered = filtered.filter((u) => u.status === filters.status)
-  }
-
-  if (filters.role && filters.role !== 'ALL') {
-    filtered = filtered.filter((u) => u.roles.includes(filters.role))
-  }
-
-  const start = (filters.page - 1) * filters.pageSize
-  return {
-    users: filtered.slice(start, start + filters.pageSize),
-    total: filtered.length,
-    totalPages: Math.ceil(filtered.length / filters.pageSize),
-  }
-}

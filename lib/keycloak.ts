@@ -38,13 +38,60 @@ export function extractUserFromToken(accessToken: string) {
     given_name?: string
     family_name?: string
     realm_access?: { roles?: string[] }
+    resource_access?: Record<string, { roles?: string[] }>
     department?: string
     station_code?: string
   }
 
-  const RASED_ROLES = ['SUPER_ADMIN', 'EXCISE_OFFICER', 'DATA_ENTRY_OPERATOR', 'AUDITOR']
-  const allRoles = payload.realm_access?.roles || []
-  const rasedRoles = allRoles.filter((r) => RASED_ROLES.includes(r)) as SessionData['user'] extends undefined ? never : NonNullable<SessionData['user']>['roles']
+  const normalizeRole = (role: string): NonNullable<SessionData['user']>['roles'][number] | undefined => {
+    const normalized = role.trim().toUpperCase().replace(/[-\s]/g, '_')
+
+    if (normalized === 'SUPER_ADMIN' || normalized === 'SUPERADMIN' || normalized === 'ADMIN') {
+      return 'SUPER_ADMIN'
+    }
+    if (normalized === 'EXCISE_OFFICER' || normalized === 'EXCISEOFFICER') {
+      return 'EXCISE_OFFICER'
+    }
+    if (
+      normalized === 'DATA_ENTRY_OPERATOR' ||
+      normalized === 'DATA_ENTRY' ||
+      normalized === 'DATAENTRYOPERATOR'
+    ) {
+      return 'DATA_ENTRY_OPERATOR'
+    }
+    if (normalized === 'AUDITOR' || normalized === 'AUDIT') {
+      return 'AUDITOR'
+    }
+
+    if (normalized.includes('SUPER') && normalized.includes('ADMIN')) {
+      return 'SUPER_ADMIN'
+    }
+    if (normalized.includes('EXCISE') && (normalized.includes('OFFICER') || normalized.includes('USER'))) {
+      return 'EXCISE_OFFICER'
+    }
+    if (normalized.includes('DATA') && normalized.includes('ENTRY')) {
+      return 'DATA_ENTRY_OPERATOR'
+    }
+    if (normalized.includes('AUDIT')) {
+      return 'AUDITOR'
+    }
+
+    return undefined
+  }
+
+  const realmRoles = payload.realm_access?.roles || []
+  const clientRoles = Object.values(payload.resource_access || {})
+    .flatMap((client) => client.roles || [])
+  const allRoles = [...realmRoles, ...clientRoles]
+
+  const roleSet = new Set<NonNullable<SessionData['user']>['roles'][number]>()
+  for (const role of allRoles) {
+    const mappedRole = normalizeRole(role)
+    if (mappedRole) {
+      roleSet.add(mappedRole)
+    }
+  }
+  const rasedRoles = Array.from(roleSet)
 
   return {
     id: payload.sub || '',

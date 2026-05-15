@@ -4,7 +4,7 @@ import { useEffect, useState, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, ShieldAlert, Mail, Phone, CreditCard, Building, Edit2, Key, History } from 'lucide-react'
-import { User } from '@/store/userManagementStore'
+import type { User } from '@/lib/userTypes'
 
 export default function UserDetails({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
