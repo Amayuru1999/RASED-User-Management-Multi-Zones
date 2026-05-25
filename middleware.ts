@@ -32,6 +32,11 @@ function withBasePath(pathname: string) {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  if (pathname === '/') {
+    return NextResponse.redirect(new URL(BASE_PATH, request.url))
+  }
+
   const zonePathname = removeBasePath(pathname)
 
   if (PUBLIC_PATHS.some((p) => zonePathname.startsWith(p))) {

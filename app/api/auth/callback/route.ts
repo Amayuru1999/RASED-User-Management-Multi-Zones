@@ -4,8 +4,9 @@ import { cookies } from 'next/headers'
 import { SessionData, SESSION_OPTIONS } from '@/lib/session'
 import { exchangeCodeForTokens, extractUserFromToken } from '@/lib/keycloak'
 
-const ZONE_URL = process.env.NEXT_PUBLIC_ZONE_URL || 'http://localhost:3001/users'
-const SHELL_URL = process.env.NEXT_PUBLIC_SHELL_URL || 'http://localhost:3000'
+const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost'
+const ZONE_URL = process.env.NEXT_PUBLIC_ZONE_URL || `${GATEWAY_URL}/users`
+const SHELL_URL = process.env.NEXT_PUBLIC_SHELL_URL || GATEWAY_URL
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl

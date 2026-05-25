@@ -43,6 +43,55 @@ function buildUserQuery(filters: UserFilters): Filter<UserDocument> {
   return { $and: andFilters }
 }
 
+function matchesFilters(user: User, filters: UserFilters): boolean {
+  if (filters.search) {
+    const searchRegex = new RegExp(filters.search, 'i')
+    const matchesSearch =
+      searchRegex.test(user.firstName) ||
+      searchRegex.test(user.lastName) ||
+      searchRegex.test(user.email) ||
+      searchRegex.test(user.username)
+
+    if (!matchesSearch) {
+      return false
+    }
+  }
+
+  if (filters.status && filters.status !== 'ALL' && user.status !== filters.status) {
+    return false
+  }
+
+  if (filters.role && filters.role !== 'ALL' && !user.roles.includes(filters.role)) {
+    return false
+  }
+
+  return true
+}
+
+function sortUsers(users: User[]): User[] {
+  return [...users].sort((left, right) => {
+    const firstNameCompare = left.firstName.localeCompare(right.firstName)
+    if (firstNameCompare !== 0) {
+      return firstNameCompare
+    }
+
+    return left.lastName.localeCompare(right.lastName)
+  })
+}
+
+function getSeedUsers(filters: UserFilters): UsersResponse {
+  const filteredUsers = sortUsers(USER_SEED_DATA.filter((user) => matchesFilters(user, filters)))
+  const skip = (filters.page - 1) * filters.pageSize
+  const paginatedUsers = filteredUsers.slice(skip, skip + filters.pageSize)
+  const total = filteredUsers.length
+
+  return {
+    users: paginatedUsers,
+    total,
+    totalPages: Math.ceil(total / filters.pageSize) || 1,
+  }
+}
+
 export async function ensureSeedUsers(): Promise<void> {
   const db = await getMongoDb()
   const usersCollection = db.collection<UserDocument>(USERS_COLLECTION)
@@ -85,36 +134,46 @@ export async function seedUsers(force = false): Promise<{ inserted: number; tota
 }
 
 export async function getUsers(filters: UserFilters): Promise<UsersResponse> {
-  await ensureSeedUsers()
+  try {
+    await ensureSeedUsers()
 
-  const db = await getMongoDb()
-  const usersCollection = db.collection<UserDocument>(USERS_COLLECTION)
+    const db = await getMongoDb()
+    const usersCollection = db.collection<UserDocument>(USERS_COLLECTION)
 
-  const query = buildUserQuery(filters)
-  const skip = (filters.page - 1) * filters.pageSize
+    const query = buildUserQuery(filters)
+    const skip = (filters.page - 1) * filters.pageSize
 
-  const [usersDocs, total] = await Promise.all([
-    usersCollection.find(query).sort({ firstName: 1, lastName: 1 }).skip(skip).limit(filters.pageSize).toArray(),
-    usersCollection.countDocuments(query),
-  ])
+    const [usersDocs, total] = await Promise.all([
+      usersCollection.find(query).sort({ firstName: 1, lastName: 1 }).skip(skip).limit(filters.pageSize).toArray(),
+      usersCollection.countDocuments(query),
+    ])
 
-  return {
-    users: usersDocs.map(mapDocToUser),
-    total,
-    totalPages: Math.ceil(total / filters.pageSize) || 1,
+    return {
+      users: usersDocs.map(mapDocToUser),
+      total,
+      totalPages: Math.ceil(total / filters.pageSize) || 1,
+    }
+  } catch (error) {
+    console.error('Falling back to seed users because MongoDB is unavailable', error)
+    return getSeedUsers(filters)
   }
 }
 
 export async function getUserById(id: string): Promise<User | null> {
-  await ensureSeedUsers()
+  try {
+    await ensureSeedUsers()
 
-  const db = await getMongoDb()
-  const usersCollection = db.collection<UserDocument>(USERS_COLLECTION)
-  const user = await usersCollection.findOne({ id })
+    const db = await getMongoDb()
+    const usersCollection = db.collection<UserDocument>(USERS_COLLECTION)
+    const user = await usersCollection.findOne({ id })
 
-  if (!user) {
-    return null
+    if (!user) {
+      return null
+    }
+
+    return mapDocToUser(user)
+  } catch (error) {
+    console.error('Falling back to seed user lookup because MongoDB is unavailable', error)
+    return USER_SEED_DATA.find((user) => user.id === id) || null
   }
-
-  return mapDocToUser(user)
 }
