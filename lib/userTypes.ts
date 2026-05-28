@@ -12,6 +12,21 @@ export interface User {
   phone?: string
   department?: string
   stationCode?: string
+  nationalIdDocumentRef?: string
+  nationalIdDocumentBucket?: string
+  nationalIdDocumentUploadedAt?: string
+}
+
+export interface CreateUserInput {
+  username: string
+  email: string
+  firstName: string
+  lastName: string
+  role: string
+  nic?: string
+  phone?: string
+  department?: string
+  stationCode?: string
 }
 
 export interface UserFilters {

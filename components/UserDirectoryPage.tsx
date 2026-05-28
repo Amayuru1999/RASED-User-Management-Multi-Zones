@@ -278,6 +278,7 @@ export function UserDirectoryPage({
 }) {
   const router = useRouter()
   const { filters, setFilters } = useUserManagementStore()
+
   const filteredUsersResponse = useMemo(
     () => getFilteredUsers(initialUsers, filters),
     [filters, initialUsers],
@@ -309,9 +310,9 @@ export function UserDirectoryPage({
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 flex items-center">
-            <TitleIcon className="h-8 w-8 mr-3 text-primary" />
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 flex items-center">
+            <TitleIcon className="h-7 w-7 sm:h-8 sm:w-8 mr-3 text-primary flex-shrink-0" />
             {uiConfig.title}
           </h1>
           <p className="text-slate-500 mt-2">{uiConfig.description}</p>
@@ -320,17 +321,17 @@ export function UserDirectoryPage({
           action={uiConfig.primaryAction}
           iconRegistry={ICON_REGISTRY}
           toneClasses={ACTION_TONE_CLASSES}
-          className="flex items-center px-5 py-2.5 bg-[#1e90ff] text-white font-medium rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-sm active:scale-[0.98]"
+          className="flex w-full sm:w-auto items-center justify-center px-5 py-2.5 bg-[#1e90ff] text-white font-medium rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all shadow-sm active:scale-[0.98]"
           onClick={() => executeAction(uiConfig.primaryAction)}
         />
       </div>
 
       <Card>
         <CardHeader className="pb-3 border-b border-slate-100">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4">
             <CardTitle className="text-lg font-medium text-slate-700">User Directory</CardTitle>
 
-            <div className="flex flex-wrap items-center w-full sm:w-auto gap-2">
+            <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 md:flex md:w-auto md:flex-wrap md:items-center">
               <SchemaFilters
                 filters={uiConfig.filters}
                 registry={FILTER_RENDERERS}
@@ -341,7 +342,7 @@ export function UserDirectoryPage({
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
+            <table className="w-full min-w-[720px] text-sm text-left">
               <thead className="text-xs text-slate-500 bg-slate-50 uppercase">
                 <tr>
                   {columns.map((column) => (
@@ -387,12 +388,12 @@ export function UserDirectoryPage({
             </table>
           </div>
 
-          <div className="flex items-center justify-between px-6 py-3 border-t border-slate-100 bg-slate-50/50">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-t border-slate-100 bg-slate-50/50">
             <span className="text-sm text-slate-500">
               Showing <span className="font-medium text-slate-900">{filteredUsersResponse.users.length}</span> of{' '}
               <span className="font-medium text-slate-900">{filteredUsersResponse.total}</span> results
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 disabled={filters.page === 1}
                 onClick={() => setFilters({ page: filters.page - 1 })}

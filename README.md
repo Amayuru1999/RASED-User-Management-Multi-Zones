@@ -2,7 +2,19 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, make sure MongoDB is running on `mongodb://127.0.0.1:27017` (or update `.env.local`), then run the development server:
+First, make sure PostgreSQL is running and `.env.local` contains a valid `DATABASE_URL`, then run the development server:
+
+```env
+DATABASE_URL=postgres://USER:PASSWORD@localhost:5432/rased
+MINIO_ENDPOINT=localhost
+MINIO_PORT=9000
+MINIO_USE_SSL=false
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET=rased-documents
+MINIO_REGION=us-east-1
+NATIONAL_ID_UPLOAD_EXPIRY_SECONDS=900
+```
 
 ```bash
 npm run dev
@@ -16,10 +28,11 @@ bun dev
 
 Open [http://localhost:3001/users](http://localhost:3001/users) with your browser to see the result.
 
-## User Directory data source
+## User Directory Data Source
 
-- User data is read from MongoDB through `app/api/users`.
-- On first read, the API auto-seeds sample users if the `users` collection is empty.
+- User data is read from PostgreSQL through `app/api/users`.
+- On first read, the API creates the `users` table and auto-seeds sample users if the table is empty.
+- Creating a user stores the National ID card PDF reference in PostgreSQL and returns an expiring MinIO upload URL for the PDF.
 - To manually seed (or reseed), call:
 
 ```bash

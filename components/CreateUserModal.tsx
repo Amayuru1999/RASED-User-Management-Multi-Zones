@@ -11,7 +11,7 @@ export function CreateUserModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm transition-opacity">
       <div className="w-full max-w-xl rounded-2xl bg-white shadow-2xl animate-in zoom-in-95 duration-200 overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]">
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="px-4 sm:px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 text-blue-600 rounded-xl">
               <UserPlus className="h-5 w-5" />
@@ -26,7 +26,7 @@ export function CreateUserModal() {
           </button>
         </div>
 
-        <div className="overflow-y-auto p-6">
+        <div className="overflow-y-auto p-4 sm:p-6">
           <form className="space-y-5">
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-1.5">Username</label>
@@ -75,7 +75,7 @@ export function CreateUserModal() {
           </form>
         </div>
 
-        <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3">
+        <div className="px-4 sm:px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
           <button
             type="button"
             onClick={closeCreateModal}
@@ -86,7 +86,7 @@ export function CreateUserModal() {
           <button
             type="button"
             onClick={closeCreateModal}
-            className="px-5 py-2.5 text-sm font-semibold text-white bg-[#1e90ff] rounded-xl hover:bg-blue-600 transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/30 active:scale-[0.98] flex items-center"
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-[#1e90ff] rounded-xl hover:bg-blue-600 transition-all shadow-sm focus:outline-none focus:ring-4 focus:ring-blue-500/30 active:scale-[0.98] flex items-center justify-center"
           >
             Create User
           </button>

@@ -32,7 +32,7 @@ export function UserManagementNavbar() {
   const normalizedPath = normalizePath(pathname || '/')
 
   return (
-    <nav className="flex flex-wrap items-center gap-2 rounded-2xl border border-blue-100 bg-white/80 p-2 shadow-sm">
+    <nav className="grid grid-cols-1 gap-2 rounded-2xl border border-blue-100 bg-white/80 p-2 shadow-sm sm:flex sm:flex-wrap sm:items-center">
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon
         const isActive =
@@ -44,7 +44,7 @@ export function UserManagementNavbar() {
             key={item.name}
             href={item.href}
             className={clsx(
-              'inline-flex items-center rounded-xl px-4 py-2.5 text-sm font-medium transition-colors',
+              'inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition-colors sm:justify-start',
               isActive
                 ? 'bg-blue-50 text-[#1e90ff] border border-blue-100'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 border border-transparent',

@@ -50,15 +50,15 @@ export default function UserDetails({ params }: { params: Promise<{ id: string }
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-3 sm:gap-4">
         <button 
           onClick={() => router.push('/')}
           className="p-2 bg-white text-slate-600 hover:text-slate-900 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
         >
           <ArrowLeft className="h-5 w-5" />
         </button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">User Profile</h1>
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">User Profile</h1>
           <p className="text-slate-500">View and manage details for {user.firstName} {user.lastName}</p>
         </div>
       </div>
@@ -74,8 +74,8 @@ export default function UserDetails({ params }: { params: Promise<{ id: string }
               </div>
             </div>
             
-            <div className="mt-12 flex justify-between items-start">
-              <div>
+            <div className="mt-12 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-start">
+              <div className="min-w-0">
                 <h2 className="text-2xl font-bold text-slate-900">{user.firstName} {user.lastName}</h2>
                 <p className="text-slate-500 font-medium">@{user.username}</p>
               </div>
@@ -99,26 +99,26 @@ export default function UserDetails({ params }: { params: Promise<{ id: string }
             </div>
 
             <div className="mt-8 space-y-4">
-              <div className="flex items-center text-slate-600">
-                <Mail className="h-5 w-5 mr-3 text-slate-400" />
-                <span className="text-sm font-medium">{user.email}</span>
+              <div className="flex items-start text-slate-600">
+                <Mail className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0 text-slate-400" />
+                <span className="min-w-0 break-words text-sm font-medium">{user.email}</span>
               </div>
               {user.phone && (
-                <div className="flex items-center text-slate-600">
-                  <Phone className="h-5 w-5 mr-3 text-slate-400" />
-                  <span className="text-sm font-medium">{user.phone}</span>
+                <div className="flex items-start text-slate-600">
+                  <Phone className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0 text-slate-400" />
+                  <span className="min-w-0 break-words text-sm font-medium">{user.phone}</span>
                 </div>
               )}
               {user.nic && (
-                <div className="flex items-center text-slate-600">
-                  <CreditCard className="h-5 w-5 mr-3 text-slate-400" />
-                  <span className="text-sm font-medium">NIC: {user.nic}</span>
+                <div className="flex items-start text-slate-600">
+                  <CreditCard className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0 text-slate-400" />
+                  <span className="min-w-0 break-words text-sm font-medium">NIC: {user.nic}</span>
                 </div>
               )}
               {user.department && (
-                <div className="flex items-center text-slate-600">
-                  <Building className="h-5 w-5 mr-3 text-slate-400" />
-                  <span className="text-sm font-medium">{user.department}</span>
+                <div className="flex items-start text-slate-600">
+                  <Building className="h-5 w-5 mr-3 mt-0.5 flex-shrink-0 text-slate-400" />
+                  <span className="min-w-0 break-words text-sm font-medium">{user.department}</span>
                 </div>
               )}
             </div>
@@ -142,18 +142,18 @@ export default function UserDetails({ params }: { params: Promise<{ id: string }
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-6">
-                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
-                  <div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                  <div className="min-w-0">
                     <h3 className="font-semibold text-slate-900">Password</h3>
                     <p className="text-sm text-slate-500 mt-1">Last changed 45 days ago</p>
                   </div>
-                  <button className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium text-sm transition-colors shadow-sm flex items-center">
+                  <button className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-medium text-sm transition-colors shadow-sm flex items-center justify-center">
                     <Key className="h-4 w-4 mr-2" /> Reset Password
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
-                  <div>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                  <div className="min-w-0">
                     <h3 className="font-semibold text-slate-900">Two-Factor Authentication</h3>
                     <p className="text-sm text-slate-500 mt-1">Currently enabled via Authenticator App</p>
                   </div>
@@ -180,8 +180,8 @@ export default function UserDetails({ params }: { params: Promise<{ id: string }
                   { action: 'Updated License #LIC-2026-001', time: '1 day ago', ip: '192.168.1.1' },
                   { action: 'Exported User Report', time: '3 days ago', ip: '192.168.1.45' },
                 ].map((log, i) => (
-                  <div key={i} className="p-4 hover:bg-slate-50/50 transition-colors flex justify-between items-center">
-                    <div>
+                  <div key={i} className="p-4 hover:bg-slate-50/50 transition-colors flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
+                    <div className="min-w-0">
                       <p className="font-medium text-slate-800 text-sm">{log.action}</p>
                       <p className="text-xs text-slate-500 mt-1">IP: {log.ip}</p>
                     </div>

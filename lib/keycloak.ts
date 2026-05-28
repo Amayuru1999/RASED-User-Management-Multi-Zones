@@ -1,6 +1,7 @@
 import { SessionData } from './session'
 
 const KEYCLOAK_URL = process.env.KEYCLOAK_URL!
+const KEYCLOAK_INTERNAL_URL = process.env.KEYCLOAK_INTERNAL_URL || KEYCLOAK_URL
 const KEYCLOAK_REALM = process.env.KEYCLOAK_REALM!
 const KEYCLOAK_CLIENT_ID = process.env.KEYCLOAK_CLIENT_ID!
 const KEYCLOAK_CLIENT_SECRET = process.env.KEYCLOAK_CLIENT_SECRET!
@@ -135,7 +136,7 @@ export async function exchangeCodeForTokens(params: {
   id_token?: string
   expires_in: number
 }> {
-  const tokenUrl = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`
+  const tokenUrl = `${KEYCLOAK_INTERNAL_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`
   const response = await fetch(tokenUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -159,7 +160,7 @@ export async function exchangeCodeForTokens(params: {
 export async function refreshAccessToken(session: SessionData): Promise<boolean> {
   if (!session.refreshToken) return false
   try {
-    const tokenUrl = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`
+    const tokenUrl = `${KEYCLOAK_INTERNAL_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token`
     const response = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
