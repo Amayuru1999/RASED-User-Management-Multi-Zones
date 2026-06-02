@@ -185,12 +185,21 @@ export async function refreshAccessToken(session: SessionData): Promise<boolean>
   }
 }
 
-/** Build Keycloak logout URL */
-export function buildLogoutUrl(redirectUri: string): string {
-  const url = new URL(
-    `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/logout`,
-  )
-  url.searchParams.set('client_id', KEYCLOAK_CLIENT_ID)
-  url.searchParams.set('post_logout_redirect_uri', redirectUri)
-  return url.toString()
+/** End the Keycloak session without sending the browser to Keycloak UI */
+export async function logoutFromKeycloak(refreshToken?: string): Promise<void> {
+  if (!refreshToken) return
+
+  try {
+    await fetch(`${KEYCLOAK_INTERNAL_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/logout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: KEYCLOAK_CLIENT_ID,
+        client_secret: KEYCLOAK_CLIENT_SECRET,
+        refresh_token: refreshToken,
+      }),
+    })
+  } catch (error) {
+    console.error('[Keycloak Logout] Failed to end Keycloak session', error)
+  }
 }

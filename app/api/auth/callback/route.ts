@@ -3,6 +3,7 @@ import { getIronSession } from 'iron-session'
 import { cookies } from 'next/headers'
 import { SessionData, SESSION_OPTIONS } from '@/lib/session'
 import { exchangeCodeForTokens, extractUserFromToken } from '@/lib/keycloak'
+import { sanitizeReturnUrl } from '@/lib/authRedirect'
 
 const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost'
 const ZONE_URL = process.env.NEXT_PUBLIC_ZONE_URL || `${GATEWAY_URL}/users`
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
     session.codeVerifier = undefined
     session.oauthState = undefined
 
-    const returnUrl = session.returnUrl || '/users'
+    const returnUrl = sanitizeReturnUrl(session.returnUrl, '/users')
     session.returnUrl = undefined
 
     await session.save()

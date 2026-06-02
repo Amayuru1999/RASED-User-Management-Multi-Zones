@@ -30,6 +30,19 @@ function withBasePath(pathname: string) {
   return pathname.startsWith(BASE_PATH) ? pathname : `${BASE_PATH}${pathname}`
 }
 
+function clearSessionCookie(response: NextResponse) {
+  response.cookies.set(SESSION_OPTIONS.cookieName, '', {
+    ...SESSION_OPTIONS.cookieOptions,
+    maxAge: 0,
+  })
+  return response
+}
+
+function noStore(response: NextResponse) {
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate')
+  return response
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
@@ -65,19 +78,18 @@ export async function middleware(request: NextRequest) {
   if (expiresAt - now < twoMinutes) {
     const refreshed = await refreshAccessToken(session)
     if (!refreshed) {
-      session.destroy()
       if (isApi) {
-        return NextResponse.json({ error: 'Session expired' }, { status: 401 })
+        return clearSessionCookie(NextResponse.json({ error: 'Session expired' }, { status: 401 }))
       }
       const loginUrl = new URL(`${BASE_PATH}/api/auth/login`, request.url)
       const returnPath = withBasePath(pathname)
       loginUrl.searchParams.set('returnUrl', returnPath)
-      return NextResponse.redirect(loginUrl)
+      return clearSessionCookie(NextResponse.redirect(loginUrl))
     }
     await session.save()
   }
 
-  return response
+  return noStore(response)
 }
 
 export const config = {

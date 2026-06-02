@@ -7,6 +7,7 @@ import {
   generateCodeChallenge,
   buildAuthorizationUrl,
 } from '@/lib/keycloak'
+import { sanitizeReturnUrl } from '@/lib/authRedirect'
 
 const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || 'http://localhost'
 const ZONE_URL = process.env.NEXT_PUBLIC_ZONE_URL || `${GATEWAY_URL}/users`
@@ -14,7 +15,7 @@ const ZONE_URL = process.env.NEXT_PUBLIC_ZONE_URL || `${GATEWAY_URL}/users`
 export async function GET(request: NextRequest) {
   const cookieStore = await cookies()
   const session = await getIronSession<SessionData>(cookieStore, SESSION_OPTIONS)
-  const returnUrl = request.nextUrl.searchParams.get('returnUrl') || '/users'
+  const returnUrl = sanitizeReturnUrl(request.nextUrl.searchParams.get('returnUrl'), '/users')
 
   if (session.accessToken && session.user && (session.accessTokenExpiresAt || 0) > Date.now()) {
     return NextResponse.redirect(new URL(returnUrl, GATEWAY_URL))
