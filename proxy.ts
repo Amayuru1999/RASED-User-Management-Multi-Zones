@@ -1,7 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getIronSession } from 'iron-session'
-import { SessionData, SESSION_OPTIONS } from './lib/session'
-import { refreshAccessToken } from './lib/keycloak'
+import type { SessionData } from './lib/session'
+import { refreshAccessTokenForEdge } from './lib/edgeSessionRefresh'
+
+const sharedSessionSecret = process.env.SHARED_SESSION_SECRET || process.env.SESSION_SECRET
+const sharedSessionCookieName =
+  process.env.SHARED_SESSION_COOKIE_NAME || process.env.SESSION_COOKIE_NAME || 'rased_shell_sid'
+const sharedSessionCookieDomain =
+  process.env.SHARED_SESSION_COOKIE_DOMAIN || process.env.SESSION_COOKIE_DOMAIN
+
+const SESSION_OPTIONS = {
+  password: sharedSessionSecret!,
+  cookieName: sharedSessionCookieName,
+  cookieOptions: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    maxAge: parseInt(process.env.SESSION_MAX_AGE_SECONDS || '3600', 10),
+    path: '/',
+    ...(sharedSessionCookieDomain ? { domain: sharedSessionCookieDomain } : {}),
+  },
+}
 
 const PUBLIC_PATHS = [
   '/api/auth/login',
@@ -43,7 +62,7 @@ function noStore(response: NextResponse) {
   return response
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (pathname === '/') {
@@ -57,7 +76,6 @@ export async function middleware(request: NextRequest) {
   }
 
   const isApi = zonePathname.startsWith('/api/') && !PUBLIC_PATHS.some((p) => zonePathname.startsWith(p))
-
   const response = NextResponse.next()
   const session = await getIronSession<SessionData>(request, response, SESSION_OPTIONS)
 
@@ -76,7 +94,7 @@ export async function middleware(request: NextRequest) {
   const twoMinutes = 2 * 60 * 1000
 
   if (expiresAt - now < twoMinutes) {
-    const refreshed = await refreshAccessToken(session)
+    const refreshed = await refreshAccessTokenForEdge(session)
     if (!refreshed) {
       if (isApi) {
         return clearSessionCookie(NextResponse.json({ error: 'Session expired' }, { status: 401 }))
